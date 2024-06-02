@@ -17,6 +17,7 @@ build-project-linux:
 	@./scripts/build.sh
 	@echo '----- Build done -----'
 
+.PHONY: pre-commit-install
 # Install pre-commit hook
 pre-commit-install:
 	.venv\Scripts\pre-commit.exe install

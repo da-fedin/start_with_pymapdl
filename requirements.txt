@@ -1,3 +1,13 @@
+# For mapdl
 pillow==10.3.0
 ansys-mapdl-core==0.68.1
 ansys-mapdl-reader==0.53.0
+
+# For code style
+flake8-nb==0.5.3
+# Set pre-commit
+pre-commit==3.6.0
+# Adopt to jupiter notebook
+nbconvert==7.14.2
+# Formatter. Apply codestyle
+black==23.7.0
