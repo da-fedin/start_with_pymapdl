@@ -22,6 +22,7 @@ build-project-linux:
 pre-commit-install:
 	.venv\Scripts\pre-commit.exe install
 
+.PHONY: pre-commit-run
 # Run pre-commit hook
 pre-commit-run:
 	.venv\Scripts\pre-commit.exe run
