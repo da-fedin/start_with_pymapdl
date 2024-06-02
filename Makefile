@@ -1,7 +1,7 @@
 # Set variables
 VENV_DIR := venv
 SCRIPTS_DIR := scripts
-PS_SCRIPT := $(SCRIPTS_DIR)/build_project.ps1
+PS_SCRIPT := $(SCRIPTS_DIR)/build.ps1
 REQUIREMENTS_FILE := requirements.txt
 
 .PHONY: build-project-win
