@@ -11,3 +11,6 @@ pre-commit==3.6.0
 nbconvert==7.14.2
 # Formatter. Apply codestyle
 black==23.7.0
+
+# For inp to py conversion
+#autopep8==2.2.0
