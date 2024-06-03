@@ -8,4 +8,5 @@ save_path = os.path.join(os.path.dirname(__file__), result_path)
 
 py_code = pymapdl.convert_script(examples.vmfiles["vm1"], save_path)
 
+# Print it
 [print(_) for _ in py_code]
