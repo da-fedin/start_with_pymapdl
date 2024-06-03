@@ -1,0 +1,28 @@
+! Clear the previous result
+FINISH
+/CLEAR
+/PREP7
+! Element type and material properties
+ET, 1, 187        ! ElementType, 1, ElementTypeNumber
+MP, EX, 1, 10E6   ! Material Properties: Young's Modulus
+MP, NUXY, 1, .3   ! Material Properties: Poisson's ratio
+! Geometry and element type
+BLOCK, 0, 10, 0, 100, 0, 10
+! Volumne mesh
+VMESH, ALL
+! APPLY BOUNDARY CONDITION: Clamp one end (coordinate origin)
+NSEL, S, LOC, Y, 0
+D, ALL, ALL, 0
+! APPLIED LOAD: Load on another end
+NSEL, S, LOC, Y, 100     ! Select Y direction 100 side
+NSEL, ALL, FY, 100       ! Select all points on the plane
+ALLSEL
+FINISH
+! Solution
+/SOLU
+/STATUS, SOLU
+SOLVE
+FINISH
+! Post-processing
+/POST1
+PLNSOL, U, SUM, 0, 1    ! Solve for displacement
