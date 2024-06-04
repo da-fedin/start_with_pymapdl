@@ -12,5 +12,12 @@ nbconvert==7.14.2
 # Formatter. Apply codestyle
 black==23.7.0
 
+# For math
+numpy==1.26.4
+pandas==2.2.2
+
+# For math plot
+matplotlib==3.9.0
+
 # For inp to py conversion
 #autopep8==2.2.0
