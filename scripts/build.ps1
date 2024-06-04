@@ -2,7 +2,8 @@
 
 param (
     [string]$requirementsFile = "requirements.txt",
-    [string]$venvDir = ".venv"
+    [string]$venvDir = ".venv",
+    [string]$tmpDir = "tmp"
 )
 
 Write-Output "Build started..."
@@ -40,12 +41,25 @@ try {
     Write-Output "Installing Jupyter using pip..."
     & $pipExecutable install jupyter
     Write-Output "Jupyter installed successfully!"
-
-    # Install spacy model for 17th homework
-    & python -m spacy download en_core_web_sm
 }
 catch {
     Write-Output "Failed to install requirements. Please check if pip is installed correctly."
 }
+
+Write-Output " --------------------------------------------- "
+
+# Remove temporary files
+Write-Output "Start to remove files from $tmpDir dir ..."
+
+try {
+    Remove-Item "$tmpDir/*.*"
+}
+catch {
+    Write-Output "Failed to remove files from $tmpDir dir."
+}
+
+Write-Output " Files from $tmpDir dir removed"
+
+Write-Output " --------------------------------------------- "
 
 Write-Output "Build done."
