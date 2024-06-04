@@ -7,11 +7,11 @@ repos:
         stages: [ commit ]
         language: system
         entry: python -m nbconvert --ClearOutputPreprocessor.enabled=True --inplace
-#      - id: flake8-nb
-#        name: flake8-nb
-#        entry: flake8_nb --ignore=E501,E703,E712,W503 --notebook-cell-format '{nb_path}:code_cell#{code_cell_count}' notebooks/
-#        language: system
-#        types: [ python ]
+      - id: flake8-nb
+        name: flake8-nb
+        entry: flake8_nb --ignore=E501,E703,E712,W503 --notebook-cell-format '{nb_path}:code_cell#{code_cell_count}' notebooks/
+        language: system
+        types: [ python ]
 #      - id: flake8
 #        name: flake8
 #        entry: flake8 --ignore=E501,E703 sources/graphics.py sources/processing.py
