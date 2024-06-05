@@ -1,4 +1,5 @@
 import os
+import ansys.mapdl.core
 
 
 class StopExecution(Exception):
@@ -15,7 +16,16 @@ def get_file_path(folder_name: str, file_name: str) -> str:
     # Combine the directory and file name to form the search path
     search_path = os.path.join(search_dir, file_name)
 
-    print(search_dir)
-    print(search_path)
-
     return search_path
+
+
+def get_mapdl_version(mapdl_instance, method="Category") -> float:
+    """
+    Get mapdl version
+    """
+    if method == "Category":
+        version = mapdl_instance.version
+    else:
+        version = mapdl_instance.get_value("Active", 0, "Rev")
+
+    return version
