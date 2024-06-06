@@ -1,5 +1,4 @@
 import os
-import ansys.mapdl.core
 
 
 class StopExecution(Exception):

@@ -11,11 +11,11 @@ source_file_name = "beam.inp"
 result_path = r"tmp\beam.py"
 
 # Set paths
-search_dir = os.path.join(os.path.dirname(__file__), source_folder)
+search_dir = os.path.join(os.path.dirname(os.getcwd()), source_folder)
 
 search_path = os.path.join(search_dir, source_file_name)
 
-save_path = os.path.join(os.path.dirname(__file__), result_path)
+save_path = os.path.join(os.path.dirname(os.getcwd()), result_path)
 
 # Run server
 mapdl = pymapdl.launch_mapdl()
