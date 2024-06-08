@@ -117,7 +117,7 @@ def solve_vm_35(
     disp = mapdl.post_processing.nodal_displacement("Z")
     uz_max = max(disp.max(), disp.min(), key=abs)
     mapdl.exit()
-    # mapdl.exit()
+
     return png_path, uz_max
 
 

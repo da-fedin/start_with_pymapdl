@@ -3,8 +3,9 @@ import shutil
 import os
 
 # import project specific files
-import app.lib.pymapdl.bimetallic
-from app.lib.constants import *
+import application
+from application import my_mapdl_launch_in_cwd, solve_vm_35, roarks_vm_35
+from application import IMAGE_PATH, NEW_WDIR_NAME, JNAME, RUN_COMPLETE, FINAL_IMAGE_PATH
 
 app = Flask(__name__)
 
@@ -14,14 +15,10 @@ images = os.path.join(cwd, IMAGE_PATH)
 
 def pyMapdl_vm35(L, t, e1, e2, c1, c2, T1, T2):
     # Launch
-    mapdl, my_wdirnow = app.lib.pymapdl.bimetallic.my_mapdl_launch_in_cwd(
-        NEW_WDIR_NAME, JNAME
-    )
+    mapdl, my_wdirnow = my_mapdl_launch_in_cwd(NEW_WDIR_NAME, JNAME)
 
     # Solve
-    png_path, uz_max = app.lib.pymapdl.bimetallic.solve_vm_35(
-        images, mapdl, L, t, e1, e2, c1, c2, T1, T2
-    )
+    png_path, uz_max = solve_vm_35(images, mapdl, L, t, e1, e2, c1, c2, T1, T2)
 
     return [png_path, round(uz_max, 3)]
 
@@ -71,7 +68,7 @@ def calculator():
         flag = 1
         print(image)
         print(usum)
-        roarks_zmax = app.lib.pymapdl.bimetallic.roarks_vm_35(
+        roarks_zmax = roarks_vm_35(
             my_length,
             my_thickness,
             my_mat1ex,
@@ -92,7 +89,7 @@ def calculator():
         print("roarks is " + str(roarks_zmax))
 
     return render_template(
-        "inputpage.html",
+        template_name_or_list="input_page.html",
         Flag=flag,
         TotalDeformation=usum,
         SolveStatus="Solved",
