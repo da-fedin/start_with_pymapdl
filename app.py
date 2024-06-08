@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import shutil
 import os
 
+
 # import project specific files
 import application
 from application import my_mapdl_launch_in_cwd, solve_vm_35, roarks_vm_35
