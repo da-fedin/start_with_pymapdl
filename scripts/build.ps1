@@ -48,17 +48,27 @@ catch {
 
 Write-Output " --------------------------------------------- "
 
-# Remove temporary files
-Write-Output "Start to remove files from $tmpDir dir ..."
+# Check if the temporary directory exists
+if (-Not (Test-Path -Path $tmpDir)) {
+    # Create the directory if it does not exist
+    Write-Output "Directory $tmpDir does not exist. Creating the directory..."
+    New-Item -ItemType Directory -Path $tmpDir
+    Write-Output "Directory $tmpDir created."
+} else {
+    Write-Output "Directory $tmpDir already exists."
+}
+
+# Remove temporary files and subfolders
+Write-Output "Start to remove files and subfolders from $tmpDir dir ..."
 
 try {
-    Remove-Item "$tmpDir/*.*"
+    Remove-Item "$tmpDir\*" -Recurse -Force
 }
 catch {
-    Write-Output "Failed to remove files from $tmpDir dir."
+    Write-Output "Failed to remove files and subfolders from $tmpDir dir."
 }
 
-Write-Output " Files from $tmpDir dir removed"
+Write-Output "Files and subfolders from $tmpDir dir removed"
 
 Write-Output " --------------------------------------------- "
 
