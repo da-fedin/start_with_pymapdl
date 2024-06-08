@@ -1,10 +1,10 @@
-NEW_WDIR_NAME = "vm35_bimetallic"
+NEW_WDIR_NAME = "application/vm35_bimetallic"
 
 JNAME = "my_new_vm"
 
-IMAGE_PATH = "/application/static"
+IMAGE_PATH = "application/static"
 
-FINAL_IMAGE_PATH = "/application/static/cylinder_use.png"
+FINAL_IMAGE_PATH = "application/static/cylinder_use.png"
 
 RUN_COMPLETE = ".......Run Complete......."
 

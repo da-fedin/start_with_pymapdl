@@ -20,7 +20,7 @@ pandas==2.2.2
 matplotlib==3.9.0
 
 # For web
-flask==2.3.2
+flask==3.0.3
 requests==2.31.0
 
 # For inp to py conversion
