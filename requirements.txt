@@ -19,5 +19,9 @@ pandas==2.2.2
 # For math plot
 matplotlib==3.9.0
 
+# For web
+flask==2.3.2
+requests==2.31.0
+
 # For inp to py conversion
 #autopep8==2.2.0
