@@ -90,13 +90,14 @@ def calculator():
         print("roarks is " + str(roarks_zmax))
 
     return render_template(
-        template_name_or_list="input_page.html",
+        template_name_or_list="index.html",
         Flag=flag,
         TotalDeformation=usum,
         SolveStatus="Solved",
         RoarksZmax=roarks_zmax,
         error=error1,
         output_image_url=image,
+        input_image_url=IMAGE_PATH,
         L2=my_length,
         t2=my_thickness,
         E21=my_mat1ex,
