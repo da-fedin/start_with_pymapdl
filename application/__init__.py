@@ -1,6 +1,6 @@
 from .lib.pymapdl.bimetallic import (
-    my_mapdl_launch_in_cwd,
-    clean_wdir,
+    launch_mapdl_in_dir,
+    clean_work_dir,
     solve_vm_35,
     roarks_vm_35,
 )

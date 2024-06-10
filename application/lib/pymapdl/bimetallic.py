@@ -1,58 +1,102 @@
 import os
 from ansys.mapdl.core import launch_mapdl
-import numpy as np
+from ansys.mapdl.core.mapdl_grpc import MapdlGrpc
+from typing import SupportsAbs, TypeVar
 
-# path = os.getcwd()
-
-
-def clean_wdir(mydir):
-    filelist = [f for f in os.listdir(mydir)]
-    for f in filelist:
-        os.remove(os.path.join(mydir, f))
+# Set some type hints
+_T = TypeVar("_T", bound=SupportsAbs)
 
 
-def my_mapdl_launch_in_cwd(my_wdirnew, my_job_name):
-    """create a new working directory beside the py file"""
+def clean_work_dir(current_dir: str) -> None:
+    # Get list of names of the files in the directory
+    file_list = [_ for _ in os.listdir(current_dir)]
+
+    # Loop over list
+    for _ in file_list:
+        # Remove files in the directory
+        os.remove(os.path.join(current_dir, _))
+
+
+def launch_mapdl_in_dir(work_dir: str, job_name: str) -> tuple[MapdlGrpc, str]:
+    """Get MAPDL instance in predefined dir"""
+    # Get root folder path
     path = os.getcwd()
-    new_wdir_path = os.path.join(path, my_wdirnew)
+
+    # Set dir path
+    dir_path = os.path.join(path, work_dir)
+
+    # Create dir
     try:
-        os.mkdir(new_wdir_path)
-    except:
-        clean_wdir(new_wdir_path)
+        os.mkdir(dir_path)
+
+    except OSError as e:
+        clean_work_dir(dir_path)
+
+    # Run MAPDL
     mapdl = launch_mapdl(
-        run_location=new_wdir_path,
-        jobname=my_job_name,
+        run_location=dir_path,
+        jobname=job_name,
         nproc=1,
         override=True,
         additional_switches="-smp",
     )
-    return mapdl, new_wdir_path
+
+    return mapdl, dir_path
 
 
 def solve_vm_35(
-    images,
-    mapdl,
-    length,
-    thickness,
-    ex_mat1,
-    ex_mat2,
-    cte_mat1,
-    cte_mat2,
-    my_t_ref,
-    my_t_amb,
-):
+    path_to_images: str,
+    mapdl: MapdlGrpc,
+    length: float,
+    thickness: float,
+    ex_mat1: float,
+    ex_mat2: float,
+    cte_mat1: float,
+    cte_mat2: float,
+    my_t_ref: float,
+    my_t_amb: float,
+) -> tuple[str, _T]:
+    """Solve the MAPDL model and get path to image file and max displacement"""
+    # Clear the database
     mapdl.clear("NOSTART")
+
+    # Enter the model creation preprocessor
     mapdl.prep7()
-    mapdl.units("BIN")
+
+    # Annotate the database with the system of units used
+    mapdl.units(label="BIN")
+
+    # Enter the model creation preprocessor
     mapdl.prep7()
-    mapdl.title("VM35 BIMETALLIC LAYERED CANTILEVER PLATE WITH THERMAL LOADING")
-    mapdl.run("C***     ROARK AND YOUNG, FORMULAS FOR STRESS AND STRAIN, PP. 113-114.")
-    mapdl.run("C*** USING SHELL281")
-    mapdl.antype("STATIC")
-    mapdl.et(1, "SHELL281")
-    mapdl.sectype(1, "SHELL")
-    mapdl.secdata(thickness / 2, 1, 0)  # LAYER 1: 0.05 THICK, MAT'L 1, THETA 0
-    mapdl.secdata(thickness / 2, 2, 0)  # LAYER 2: 0.05 THICK, MAT'L 2, THETA 0,
+
+    # Define a main title
+    mapdl.title(title="VM35 BIMETALLIC LAYERED CANTILEVER PLATE WITH THERMAL LOADING")
+
+    # Run single APDL commands to place a comments in the output
+    mapdl.run(
+        command="C***     ROARK AND YOUNG, FORMULAS FOR STRESS AND STRAIN, PP. 113-114."
+    )
+    mapdl.run(command="C*** USING SHELL281")
+
+    # Specify the analysis type and restart status
+    mapdl.antype(antype="STATIC")
+
+    # ------------------------- Elements --------------------------------------
+    # Define a local element type from the element library
+    mapdl.et(itype=1, ename="SHELL281")
+
+    # Associates section type information with a section ID number
+    mapdl.sectype(secid=1, type_="SHELL")
+
+    # Describes the geometry of a section for layers
+    mapdl.secdata(
+        val1=thickness / 2, val2=1, val3=0
+    )  # LAYER 1: 0.05 THICK, MAT'L 1, THETA 0
+    mapdl.secdata(
+        val1=thickness / 2, val2=2, val3=0
+    )  # LAYER 2: 0.05 THICK, MAT'L 2, THETA 0,
+
+    # ------------------------- Materials --------------------------------------
     mapdl.mp("EX", 1, ex_mat1)  # MATERIAL PROPERTIES
     mapdl.mp("EX", 2, ex_mat2)
     mapdl.mp("ALPX", 1, cte_mat1)
@@ -65,19 +109,22 @@ def solve_vm_35(
     mapdl.n(11, length)
     mapdl.fill(1, 11, 9, 2, 1)
     mapdl.fill(12, 22, 9, 13, 1)
-    for ii in range(0, 6):
-        mapdl.fill(ii * 2 + 1, (ii + 1) * 2 + 10, 1, ii + 23)
-    for jj in range(0, 5):
+
+    for _ in range(0, 6):
+        mapdl.fill(_ * 2 + 1, (_ + 1) * 2 + 10, 1, _ + 23)
+
+    for _ in range(0, 5):
         mapdl.e(
-            jj * 2 + 1,
-            (jj + 1) * 2 + 10,
-            (jj + 1) * 2 + 12,
-            jj * 2 + 3,
-            jj + 23,
-            jj * 2 + 13,
-            jj + 24,
-            jj * 2 + 2,
+            _ * 2 + 1,
+            (_ + 1) * 2 + 10,
+            (_ + 1) * 2 + 12,
+            _ * 2 + 3,
+            _ + 23,
+            _ * 2 + 13,
+            _ + 24,
+            _ * 2 + 2,
         )
+
     mapdl.nsel("S", "LOC", "X")
     mapdl.nsel("R", "LOC", "Y", 0.5)
     mapdl.d("ALL", "ALL")  # FIX ONE END OF CANTILEVER
@@ -95,7 +142,7 @@ def solve_vm_35(
     mapdl.finish()
     mapdl.post1()
     mapdl.set("last")
-    png_path = os.path.join(images, "cylinder.png")
+    png_path = os.path.join(path_to_images, "cylinder.png")
     sbar_kwargs = {
         "color": "black",
         "title": "Z Displacement (inch)",
@@ -122,15 +169,29 @@ def solve_vm_35(
 
 
 def roarks_vm_35(
-    length, thickness, ex_mat1, ex_mat2, cte_mat1, cte_mat2, my_t_ref, my_t_amb
-):
-    # we are constraining the layer thicknesses to be the same, so ta/tb term is 1
-    # which simplifies the equation and I'm dropping the (ta/tb)^n terms as they are all 1
-    # K1 = ex_mat1 / ex_mat2
+    length: float,
+    thickness: float,
+    ex_mat1: float,
+    ex_mat2: float,
+    cte_mat1: float,
+    cte_mat2: float,
+    my_t_ref: float,
+    my_t_amb: float,
+) -> float:
+    """
+    Get k_1.
+    Notes:
+    We are constraining the layer thicknesses to be the same, so ta/tb term is 1
+    which simplifies the equation. I'm dropping the (ta/tb)^n terms as they are all 1
+    k_1 = ex_mat1 / ex_mat2
+    """
 
-    K1 = 4.0 + 6.0 + 4.0 + (ex_mat1 / ex_mat2) + (ex_mat2 / ex_mat1)
+    k_1 = 4.0 + 6.0 + 4.0 + (ex_mat1 / ex_mat2) + (ex_mat2 / ex_mat1)
+
     ymax = (6.0 * (cte_mat2 - cte_mat1) * (my_t_amb - my_t_ref) * thickness) / (
-        K1 * ((thickness / 2) ** 2)
+        k_1 * ((thickness / 2) ** 2)
     )
+
     ymax = (ymax * (length**2)) / 2.0
+
     return round(ymax, 3)

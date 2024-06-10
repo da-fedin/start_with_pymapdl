@@ -4,29 +4,31 @@ import os
 
 
 # import project specific files
-import application
-from application import my_mapdl_launch_in_cwd, solve_vm_35, roarks_vm_35
+from application import launch_mapdl_in_dir, solve_vm_35, roarks_vm_35
 from application import IMAGE_PATH, NEW_WDIR_NAME, JNAME, RUN_COMPLETE, FINAL_IMAGE_PATH
 
 app = Flask(__name__)
 
+# Get current working directory as a string
 cwd = os.getcwd()
-images = os.path.join(cwd, IMAGE_PATH)
+
+# Set path to dir with images for template
+path_to_images = os.path.join(cwd, IMAGE_PATH)
 
 
 def pyMapdl_vm35(L, t, e1, e2, c1, c2, T1, T2):
-    # Launch
-    mapdl, my_wdirnow = my_mapdl_launch_in_cwd(NEW_WDIR_NAME, JNAME)
+    # Launch MAPDL in predefined dir
+    mapdl, dir_to_run = launch_mapdl_in_dir(work_dir=NEW_WDIR_NAME, job_name=JNAME)
 
-    # Solve
-    png_path, uz_max = solve_vm_35(images, mapdl, L, t, e1, e2, c1, c2, T1, T2)
+    # Solve task and get result path to result image
+    png_path, uz_max = solve_vm_35(path_to_images, mapdl, L, t, e1, e2, c1, c2, T1, T2)
 
     return [png_path, round(uz_max, 3)]
 
 
 @app.route("/", methods=["POST", "GET"])
 def calculator():
-    # enter default values
+    # Set default values
     my_length = 10.0
     my_thickness = 0.1
     my_mat1ex = 3.0e7
@@ -51,6 +53,7 @@ def calculator():
         my_mat2cte = float(request.form.get("mat2cte"))
         my_tref = float(request.form.get("tref"))
         my_tamb = float(request.form.get("tamb"))
+
         p_run = pyMapdl_vm35(
             my_length,
             my_thickness,
@@ -61,6 +64,7 @@ def calculator():
             my_tref,
             my_tamb,
         )
+
         print(RUN_COMPLETE)
 
         shutil.move(p_run[0], FINAL_IMAGE_PATH)
