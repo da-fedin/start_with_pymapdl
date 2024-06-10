@@ -136,18 +136,39 @@ def solve_vm_35(
             _ * 2 + 2,
         )
 
+    # ------------------------- BC/Loads --------------------------------------
+    # Select nodes with x=0
     mapdl.nsel("S", "LOC", "X")
+    # Reselect nodes with x=0 and y=.5
     mapdl.nsel("R", "LOC", "Y", 0.5)
-    mapdl.d("ALL", "ALL")  # FIX ONE END OF CANTILEVER
+    # Fix all DOF of selected nodes
+    mapdl.d("ALL", "ALL")
+
+    # Select nodes with y=.5
     mapdl.nsel("S", "LOC", "Y", 0.5)
-    mapdl.dsym("SYMM", "Y")  # SYMMETRY PLANE DOWN CENTERLINE
+    # Specify symmetry degree-of-freedom constraints on selected nodes
+    mapdl.dsym(lab="SYMM", normal="Y")
+
+    # Select all nodes
     mapdl.nsel("ALL")
-    mapdl.tref(my_t_ref)
-    mapdl.bfunif("TEMP", my_t_amb)  # DEFINE UNIFORM TEMPERATURE
+    # Define the reference temperature for selected nodes
+    mapdl.tref(tref=my_t_ref)
+    # Assign a uniform body force load to all nodes
+    mapdl.bfunif(lab="TEMP", value=my_t_amb)
+
+    # Exit preprocessor normally
     mapdl.finish()
+
+    # ------------------------- SOLUTION --------------------------------------
+    # Run /SOLU command
     mapdl.run("/SOLU")
-    mapdl.outpr("NSOL", 1)
+
+    # Control the solution printout for Nodal DOF solution
+    mapdl.outpr(item="NSOL", freq=1)
+    # and for Nodal reaction loads
     mapdl.outpr("RSOL", 1)
+
+    # Solve problem
     mapdl.solve()
     mapdl.upcoord(1)
     mapdl.finish()
