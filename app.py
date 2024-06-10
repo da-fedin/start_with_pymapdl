@@ -4,7 +4,7 @@ import os
 from typing import SupportsAbs, TypeVar
 
 # import project specific files
-from application import launch_mapdl_in_dir, solve_vm_35, roarks_vm_35
+from application import launch_mapdl_in_dir, solve_vm_35, get_analytic_solution
 from application import (
     IMAGE_DIR_PATH,
     WORK_DIR_NAME,
@@ -72,9 +72,9 @@ def calculator():
     default_ambient_temperature = 170
 
     usum = ""
-    image = ""
-    roarks_zmax = ""
-    error1 = ""
+    output_image_path = ""
+    analytic_value = ""
+    solution_error = ""
     flag = ""
 
     # Get values from page form
@@ -91,53 +91,63 @@ def calculator():
 
         # Run solution with entered values
         solution_results = pyMAPDL_vm35(
-            default_plate_length,
-            default_plate_thickness,
-            default_elastic_modulus1,
-            default_elastic_modulus2,
-            default_cte_mat1,
-            default_cte_mat2,
-            default_reference_temperature,
-            default_ambient_temperature,
+            plate_length=default_plate_length,
+            plate_thickness=default_plate_thickness,
+            elastic_modulus1=default_elastic_modulus1,
+            elastic_modulus2=default_elastic_modulus2,
+            cte_mat1=default_cte_mat1,
+            cte_mat2=default_cte_mat2,
+            reference_temperature=default_reference_temperature,
+            ambient_temperature=default_ambient_temperature,
         )
 
         print(RUN_COMPLETE_MESSAGE)
 
         # Move result image file or directory to final location
         shutil.move(solution_results[0], FINAL_IMAGE_PATH)
-        image = FINAL_IMAGE_PATH
+
+        # Set path to result image file
+        output_image_path = FINAL_IMAGE_PATH
+
+        # Get max displacement value from solution
         usum = solution_results[1]
+
+        # Set flag to switch image rendering mode (1 - solution completed)
         flag = 1
-        print(image)
-        print(usum)
-        roarks_zmax = roarks_vm_35(
-            default_plate_length,
-            default_plate_thickness,
-            default_elastic_modulus1,
-            default_elastic_modulus2,
-            default_cte_mat1,
-            default_cte_mat2,
-            default_reference_temperature,
-            default_ambient_temperature,
+
+        analytic_value = get_analytic_solution(
+            plate_length=default_plate_length,
+            plate_thickness=default_plate_thickness,
+            elastic_modulus1=default_elastic_modulus1,
+            elastic_modulus2=default_elastic_modulus2,
+            cte_mat1=default_cte_mat1,
+            cte_mat2=default_cte_mat2,
+            reference_temperature=default_reference_temperature,
+            ambient_temperature=default_ambient_temperature,
         )
 
         if not abs(usum) > 0.0:
-            error1 = 0.000
-            print("error1 " + str(error1))
+            solution_error = 0.000
+
         else:
-            error1 = ((solution_results[1] - roarks_zmax) / solution_results[1]) * 100
-            error1 = round(error1, 3)
-            print("error is " + str(error1))
-        print("roarks is " + str(roarks_zmax))
+            solution_error = (
+                (solution_results[1] - analytic_value) / solution_results[1]
+            ) * 100
+
+            solution_error = round(solution_error, 3)
+
+            print("error is " + str(solution_error))
+
+        print("roarks is " + str(analytic_value))
 
     return render_template(
         template_name_or_list="index.html",
         Flag=flag,
         TotalDeformation=usum,
         SolveStatus="Solved",
-        RoarksZmax=roarks_zmax,
-        error=error1,
-        output_image_url=image,
+        RoarksZmax=analytic_value,
+        error=solution_error,
+        output_image_url=output_image_path,
         input_image_url=IMAGE_DIR_PATH,
         L2=default_plate_length,
         t2=default_plate_thickness,

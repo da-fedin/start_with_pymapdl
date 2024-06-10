@@ -219,30 +219,37 @@ def solve_vm_35(
     return png_path, uz_max
 
 
-def roarks_vm_35(
-    length: float,
-    thickness: float,
-    ex_mat1: float,
-    ex_mat2: float,
+def get_analytic_solution(
+    plate_length: float,
+    plate_thickness: float,
+    elastic_modulus1: float,
+    elastic_modulus2: float,
     cte_mat1: float,
     cte_mat2: float,
-    my_t_ref: float,
-    my_t_amb: float,
+    reference_temperature: float,
+    ambient_temperature: float,
 ) -> float:
     """
-    Get round to 3 digits the value of k_1.
+    Get Roark's analytic solution for VM 35.
     Notes:
-    We are constraining the layer thicknesses to be the same, so ta/tb term is 1
-    which simplifies the equation. I'm dropping the (ta/tb)^n terms as they are all 1
-    k_1 = ex_mat1 / ex_mat2
+    We are constraining the layer thicknesses to be the same, so ta/tb term is 1 which simplifies the equation. I'm dropping the (ta/tb)^n terms as they are all 1 k_1 = ex_mat1 / ex_mat2
     """
 
-    k_1 = 4.0 + 6.0 + 4.0 + (ex_mat1 / ex_mat2) + (ex_mat2 / ex_mat1)
-
-    ymax = (6.0 * (cte_mat2 - cte_mat1) * (my_t_amb - my_t_ref) * thickness) / (
-        k_1 * ((thickness / 2) ** 2)
+    k_1 = (
+        4.0
+        + 6.0
+        + 4.0
+        + (elastic_modulus1 / elastic_modulus2)
+        + (elastic_modulus2 / elastic_modulus1)
     )
 
-    ymax = (ymax * (length**2)) / 2.0
+    ymax = (
+        6.0
+        * (cte_mat2 - cte_mat1)
+        * (ambient_temperature - reference_temperature)
+        * plate_thickness
+    ) / (k_1 * ((plate_thickness / 2) ** 2))
+
+    ymax = (ymax * (plate_length**2)) / 2.0
 
     return round(ymax, 3)
