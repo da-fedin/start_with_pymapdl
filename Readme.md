@@ -6,7 +6,7 @@ Status: In progress
 
 Requirements: Ansys Mechanical license and Python
 
-### App is the SaS realization of [Ansys Verification Test VM35](https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/corp/v241/en/ans_vm/Hlp_V_VM35.html?q=vm35)
+### App is the SaaS realization of [Ansys Verification Test VM35](https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/corp/v241/en/ans_vm/Hlp_V_VM35.html?q=vm35)
 
 Run flask app in debug mode:
 
