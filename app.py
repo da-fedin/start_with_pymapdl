@@ -1,11 +1,20 @@
 from flask import Flask, render_template, request
 import shutil
 import os
-
+from typing import SupportsAbs, TypeVar
 
 # import project specific files
 from application import launch_mapdl_in_dir, solve_vm_35, roarks_vm_35
-from application import IMAGE_PATH, NEW_WDIR_NAME, JNAME, RUN_COMPLETE, FINAL_IMAGE_PATH
+from application import (
+    IMAGE_DIR_PATH,
+    WORK_DIR_NAME,
+    JOB_NAME,
+    RUN_COMPLETE_MESSAGE,
+    FINAL_IMAGE_PATH,
+)
+
+# Set some type hints
+_T = TypeVar("_T", bound=SupportsAbs)
 
 app = Flask(__name__)
 
@@ -13,30 +22,54 @@ app = Flask(__name__)
 cwd = os.getcwd()
 
 # Set path to dir with images for template
-path_to_images = os.path.join(cwd, IMAGE_PATH)
+path_to_images = os.path.join(cwd, IMAGE_DIR_PATH)
 
 
-def pyMapdl_vm35(L, t, e1, e2, c1, c2, T1, T2):
-    # Launch MAPDL in predefined dir
-    mapdl, dir_to_run = launch_mapdl_in_dir(work_dir=NEW_WDIR_NAME, job_name=JNAME)
+def pyMAPDL_vm35(
+    plate_length: float,
+    plate_thickness: float,
+    elastic_modulus1: float,
+    elastic_modulus2: float,
+    cte_mat1: float,
+    cte_mat2: float,
+    reference_temperature: float,
+    ambient_temperature: float,
+):
+    """
+    Solve model and get result image path and max displacement value
+    """
+    # Get MAPDL instance and working dir
+    mapdl, dir_to_run = launch_mapdl_in_dir(work_dir=WORK_DIR_NAME, job_name=JOB_NAME)
 
     # Solve task and get result path to result image
-    png_path, uz_max = solve_vm_35(path_to_images, mapdl, L, t, e1, e2, c1, c2, T1, T2)
+    png_path, uz_max = solve_vm_35(
+        path_to_images=path_to_images,
+        mapdl=mapdl,
+        plate_length=plate_length,
+        plate_thickness=plate_thickness,
+        elastic_modulus1=elastic_modulus1,
+        elastic_modulus2=elastic_modulus2,
+        cte_mat1=cte_mat1,
+        cte_mat2=cte_mat2,
+        reference_temperature=reference_temperature,
+        ambient_temperature=ambient_temperature,
+    )
 
     return [png_path, round(uz_max, 3)]
 
 
-@app.route("/", methods=["POST", "GET"])
+# Render template (displacement calculator)
+@app.route(rule="/", methods=["POST", "GET"])
 def calculator():
     # Set default values
-    my_length = 10.0
-    my_thickness = 0.1
-    my_mat1ex = 3.0e7
-    my_mat2ex = 3.0e7
-    my_mat1cte = 1e-5
-    my_mat2cte = 2e-5
-    my_tref = 70
-    my_tamb = 170
+    default_plate_length = 10.0
+    default_plate_thickness = 0.1
+    default_elastic_modulus1 = 3.0e7
+    default_elastic_modulus2 = 3.0e7
+    default_cte_mat1 = 1e-5
+    default_cte_mat2 = 2e-5
+    default_reference_temperature = 70
+    default_ambient_temperature = 170
 
     usum = ""
     image = ""
@@ -44,51 +77,55 @@ def calculator():
     error1 = ""
     flag = ""
 
+    # Get values from page form
     if request.method == "POST":
-        my_length = float(request.form.get("Length"))
-        my_thickness = float(request.form.get("Thickness"))
-        my_mat1ex = float(request.form.get("mat1ex"))
-        my_mat2ex = float(request.form.get("mat2ex"))
-        my_mat1cte = float(request.form.get("mat1cte"))
-        my_mat2cte = float(request.form.get("mat2cte"))
-        my_tref = float(request.form.get("tref"))
-        my_tamb = float(request.form.get("tamb"))
+        # Get default values if the requested data doesn't exist
+        default_plate_length = float(request.form.get("Length"))
+        default_plate_thickness = float(request.form.get("Thickness"))
+        default_elastic_modulus1 = float(request.form.get("mat1ex"))
+        default_elastic_modulus2 = float(request.form.get("mat2ex"))
+        default_cte_mat1 = float(request.form.get("mat1cte"))
+        default_cte_mat2 = float(request.form.get("mat2cte"))
+        default_reference_temperature = float(request.form.get("tref"))
+        default_ambient_temperature = float(request.form.get("tamb"))
 
-        p_run = pyMapdl_vm35(
-            my_length,
-            my_thickness,
-            my_mat1ex,
-            my_mat2ex,
-            my_mat1cte,
-            my_mat2cte,
-            my_tref,
-            my_tamb,
+        # Run solution with entered values
+        solution_results = pyMAPDL_vm35(
+            default_plate_length,
+            default_plate_thickness,
+            default_elastic_modulus1,
+            default_elastic_modulus2,
+            default_cte_mat1,
+            default_cte_mat2,
+            default_reference_temperature,
+            default_ambient_temperature,
         )
 
-        print(RUN_COMPLETE)
+        print(RUN_COMPLETE_MESSAGE)
 
-        shutil.move(p_run[0], FINAL_IMAGE_PATH)
+        # Move result image file or directory to final location
+        shutil.move(solution_results[0], FINAL_IMAGE_PATH)
         image = FINAL_IMAGE_PATH
-        usum = p_run[1]
+        usum = solution_results[1]
         flag = 1
         print(image)
         print(usum)
         roarks_zmax = roarks_vm_35(
-            my_length,
-            my_thickness,
-            my_mat1ex,
-            my_mat2ex,
-            my_mat1cte,
-            my_mat2cte,
-            my_tref,
-            my_tamb,
+            default_plate_length,
+            default_plate_thickness,
+            default_elastic_modulus1,
+            default_elastic_modulus2,
+            default_cte_mat1,
+            default_cte_mat2,
+            default_reference_temperature,
+            default_ambient_temperature,
         )
 
         if not abs(usum) > 0.0:
             error1 = 0.000
             print("error1 " + str(error1))
         else:
-            error1 = ((p_run[1] - roarks_zmax) / p_run[1]) * 100
+            error1 = ((solution_results[1] - roarks_zmax) / solution_results[1]) * 100
             error1 = round(error1, 3)
             print("error is " + str(error1))
         print("roarks is " + str(roarks_zmax))
@@ -101,15 +138,15 @@ def calculator():
         RoarksZmax=roarks_zmax,
         error=error1,
         output_image_url=image,
-        input_image_url=IMAGE_PATH,
-        L2=my_length,
-        t2=my_thickness,
-        E21=my_mat1ex,
-        E22=my_mat2ex,
-        c21=my_mat1cte,
-        c22=my_mat2cte,
-        T1=my_tref,
-        T2=my_tamb,
+        input_image_url=IMAGE_DIR_PATH,
+        L2=default_plate_length,
+        t2=default_plate_thickness,
+        E21=default_elastic_modulus1,
+        E22=default_elastic_modulus2,
+        c21=default_cte_mat1,
+        c22=default_cte_mat2,
+        T1=default_reference_temperature,
+        T2=default_ambient_temperature,
     )
 
 

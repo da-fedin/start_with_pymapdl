@@ -1,11 +1,11 @@
-NEW_WDIR_NAME = "tmp"
+WORK_DIR_NAME = "tmp"
 
-JNAME = "my_new_vm"
+JOB_NAME = "my_new_vm"
 
-IMAGE_PATH = "static"
+IMAGE_DIR_PATH = "static"
 
 FINAL_IMAGE_PATH = "static/cylinder_use.png"
 
-RUN_COMPLETE = ".......Run Complete......."
+RUN_COMPLETE_MESSAGE = ".......Run Complete......."
 
-FILE_NOT_FOUND = "The requested file does not exist"
+FILE_NOT_FOUND_MESSAGE = "The requested file does not exist"

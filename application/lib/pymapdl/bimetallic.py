@@ -47,14 +47,14 @@ def launch_mapdl_in_dir(work_dir: str, job_name: str) -> tuple[MapdlGrpc, str]:
 def solve_vm_35(
     path_to_images: str,
     mapdl: MapdlGrpc,
-    length: float,
-    thickness: float,
-    ex_mat1: float,
-    ex_mat2: float,
+    plate_length: float,
+    plate_thickness: float,
+    elastic_modulus1: float,
+    elastic_modulus2: float,
     cte_mat1: float,
     cte_mat2: float,
-    my_t_ref: float,
-    my_t_amb: float,
+    reference_temperature: float,
+    ambient_temperature: float,
 ) -> tuple[str, _T]:
     """Solve the MAPDL model and get path to image file and max displacement"""
     # Clear the database
@@ -91,17 +91,17 @@ def solve_vm_35(
 
     # Describes the geometry of a section for layers
     mapdl.secdata(
-        val1=thickness / 2, val2=1, val3=0
+        val1=plate_thickness / 2, val2=1, val3=0
     )  # LAYER 1: 0.05 THICK, MAT'L 1, THETA 0
     mapdl.secdata(
-        val1=thickness / 2, val2=2, val3=0
+        val1=plate_thickness / 2, val2=2, val3=0
     )  # LAYER 2: 0.05 THICK, MAT'L 2, THETA 0,
 
     # ------------------------- Materials --------------------------------------
     # Define a linear material property
     # Elastic modulus
-    mapdl.mp(lab="EX", mat=1, c0=ex_mat1)
-    mapdl.mp(lab="EX", mat=2, c0=ex_mat2)
+    mapdl.mp(lab="EX", mat=1, c0=elastic_modulus1)
+    mapdl.mp(lab="EX", mat=2, c0=elastic_modulus2)
     # Thermal expansion coefficient
     mapdl.mp(lab="ALPX", mat=1, c0=cte_mat1)
     mapdl.mp(lab="ALPX", mat=2, c0=cte_mat2)
@@ -113,8 +113,8 @@ def solve_vm_35(
     # Define nodes
     mapdl.n(node=1)
     mapdl.n(node=12, x="", y=1)
-    mapdl.n(node=22, x=length, y=1)
-    mapdl.n(node=11, x=length)
+    mapdl.n(node=22, x=plate_length, y=1)
+    mapdl.n(node=11, x=plate_length)
 
     # Generate lines of nodes between two existing nodes
     mapdl.fill(node1=1, node2=11, nfill=9, nstrt=2, ninc=1)
@@ -152,9 +152,9 @@ def solve_vm_35(
     # Select all nodes
     mapdl.nsel("ALL")
     # Define the reference temperature for selected nodes
-    mapdl.tref(tref=my_t_ref)
+    mapdl.tref(tref=reference_temperature)
     # Assign a uniform body force load to all nodes
-    mapdl.bfunif(lab="TEMP", value=my_t_amb)
+    mapdl.bfunif(lab="TEMP", value=ambient_temperature)
 
     # Exit preprocessor normally
     mapdl.finish()
