@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>APDL Webapp</title>
+    <title>Ansys VM35 Calculator</title>
 </head>
 
 <body>
@@ -36,19 +36,19 @@
         </div>
 
         <div class="Input-Names">
-            <label for="Length">Length (in) </label><br/><br/>
-            <label for="Thickness">Thickness (in) </label> <br/><br/>
-            <label for="mat1ex">Mat1 : Young’s Modulus (psi) </label> <br/><br/>
-            <label for="mat2ex">Mat2 : Young’s Modulus (psi) </label> <br/><br/>
-            <label for="mat1cte">Mat1 : CTE (/degF) </label> <br/><br/>
-            <label for="mat2cte">Mat2 : CTE (/degF) </label> <br/><br/>
-            <label for="tref">T Ref (degF) </label> <br/><br/>
-            <label for="tamb">T Ambient (degF) </label> <br/><br/>
+            <label for="Length">Plate Length (in) </label><br/><br/>
+            <label for="Thickness">Plate Thickness (in) </label> <br/><br/>
+            <label for="mat1ex">Mat1: Young’s Modulus (psi) </label> <br/><br/>
+            <label for="mat2ex">Mat2: Young’s Modulus (psi) </label> <br/><br/>
+            <label for="mat1cte">Mat1: CTE (/degF) </label> <br/><br/>
+            <label for="mat2cte">Mat2: CTE (/degF) </label> <br/><br/>
+            <label for="tref">Reference Temp (degF) </label> <br/><br/>
+            <label for="tamb">Ambient Temp (degF) </label> <br/><br/>
         </div>
 
         <div class="Input-Values">
             <form onsubmit='fetchData()' method="POST">
-                <div class="invisible"></div>
+                <br/>
                 <input type="number" step=0.01 id="Length" name="Length" value={{L2}} required> <br/><br/>
                 <input type="number" step=0.01 id="Thickness" name="Thickness" value={{t2}} required> <br/><br/>
                 <input type="number" step=0.01 id="mat1ex" name="mat1ex" value={{E21}} required> <br/><br/>
@@ -67,10 +67,10 @@
         </div>
 
         <div class="Output-Names">
-            <label for="SolveStatus">Solve Status </label> <br/><br/>
-            <label for="TotalDeformation">Z Deformation (in) </label> <br/><br/>
-            <label for="RoarksZmax">Roark's Z Max (in) </label> <br/><br/>
-            <label for="error">Percent Error %</label> <br/><br/>
+            <label for="SolveStatus">Solution Status </label> <br/><br/>
+            <label for="TotalDeformation">Max Deformation Z (in) </label> <br/><br/>
+            <label for="RoarksZmax">Analytic Result (by Roark)  (in) </label> <br/><br/>
+            <label for="error">Error, %</label> <br/><br/>
         </div>
 
         <div class="Output-Values">

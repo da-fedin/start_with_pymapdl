@@ -127,18 +127,17 @@ def calculator():
         )
 
         if not abs(usum) > 0.0:
+            # Set dummy solution error in case of no error
             solution_error = 0.000
 
         else:
+            # Get solution error in %
             solution_error = (
                 (solution_results[1] - analytic_value) / solution_results[1]
             ) * 100
 
+            # Round solution error to 3 decimal digits
             solution_error = round(solution_error, 3)
-
-            print("error is " + str(solution_error))
-
-        print("roarks is " + str(analytic_value))
 
     return render_template(
         template_name_or_list="index.html",
