@@ -10,6 +10,6 @@ Requirements: Ansys Mechanical license and Python
 
 Run flask app in debug mode:
 
-    flask --app hello run --debug
+    flask --app app run --debug
 
 ### Look notebooks for basic pyMAPDL functionality.
