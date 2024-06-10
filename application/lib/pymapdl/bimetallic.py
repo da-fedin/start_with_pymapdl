@@ -142,7 +142,7 @@ def solve_vm_35(
     # Reselect nodes with x=0 and y=.5
     mapdl.nsel("R", "LOC", "Y", 0.5)
     # Fix all DOF of selected nodes
-    mapdl.d("ALL", "ALL")
+    mapdl.d(node="ALL", lab="ALL")
 
     # Select nodes with y=.5
     mapdl.nsel("S", "LOC", "Y", 0.5)
@@ -170,20 +170,34 @@ def solve_vm_35(
 
     # Solve problem
     mapdl.solve()
-    mapdl.upcoord(1)
+
+    # Modify the coordinates of the active set of nodes
+    mapdl.upcoord(factor=1)
+
+    # Exit preprocessor normally
     mapdl.finish()
+
+    # ------------------------- POST1 --------------------------------------
     mapdl.post1()
-    mapdl.set("last")
+
+    # Select las t result set for post-processing
+    mapdl.set(lstep="last")
+
+    # Set path to result image
     png_path = os.path.join(path_to_images, "cylinder.png")
+
+    # Set plot settings as a tuple
     sbar_kwargs = {
         "color": "black",
         "title": "Z Displacement (inch)",
         "vertical": False,
         "n_labels": 9,
     }
+
+    # Plot nodal displacement for selected nodes to file
     mapdl.post_processing.plot_nodal_displacement(
-        "Z",
-        "",
+        component="Z",
+        show_node_numbering="",
         cpos="iso",
         background="white",
         edge_color="black",
@@ -193,8 +207,13 @@ def solve_vm_35(
         savefig=png_path,
     )
 
+    # Get nodal displacement for selected nodes
     disp = mapdl.post_processing.nodal_displacement("Z")
+
+    # Get max value of displacements
     uz_max = max(disp.max(), disp.min(), key=abs)
+
+    # Exit MAPDL
     mapdl.exit()
 
     return png_path, uz_max
@@ -211,7 +230,7 @@ def roarks_vm_35(
     my_t_amb: float,
 ) -> float:
     """
-    Get k_1.
+    Get round to 3 digits the value of k_1.
     Notes:
     We are constraining the layer thicknesses to be the same, so ta/tb term is 1
     which simplifies the equation. I'm dropping the (ta/tb)^n terms as they are all 1
