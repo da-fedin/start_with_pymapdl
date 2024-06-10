@@ -2,9 +2,9 @@ NEW_WDIR_NAME = "tmp"
 
 JNAME = "my_new_vm"
 
-IMAGE_PATH = "application/static"
+IMAGE_PATH = "static"
 
-FINAL_IMAGE_PATH = "application/static/cylinder_use.png"
+FINAL_IMAGE_PATH = "static/cylinder_use.png"
 
 RUN_COMPLETE = ".......Run Complete......."
 

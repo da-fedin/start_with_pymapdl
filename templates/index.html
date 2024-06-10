@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invisible Element Example</title>
+    <title>APDL Webapp</title>
     <style>
         .invisible {
             height: 30px;  /* Adjust the height to create the desired space */
@@ -15,11 +15,9 @@
 
 <body>
 
-    <link rel="stylesheet" href="../application/static/style.css">
+    <link rel="stylesheet" href="../static/style.css">
 
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-
-    <title>WebApp PyMAPDL</title>
 
     <script language="javascript">
         function fetchData() {
@@ -114,12 +112,18 @@
                 <td>&nbsp;&nbsp;&nbsp;</td> <!-- Spacer cell -->
                 <td>&nbsp;&nbsp;&nbsp;</td> <!-- Spacer cell -->
                 <td valign="top">
+
+<!--                    <div class="Dummy">-->
+<!--                        {{ url_for('static', filename='cylinder_use.png') }}-->
+<!--                        <img src="{{ url_for('static', filename='cylinder_use.png') }}" alt="dummy" style="width:480px;height:300px;">-->
+<!--                    </div>-->
+
                     <div class="Input-Image">
-                        <img src={{input_image_url}} alt="problem description  image" style="width:480px;height:300px;">
+                        <img src="{{ url_for('static', filename='input_image.png') }}" alt="problem description  image" style="width:480px;height:300px;">
                     </div>
                     <div class="Result-Image">
                         {%if Flag%}
-                            <img src={{output_image_url}} alt="result image" style="width:600px;height:450px;">
+                            <img src="{{ url_for('static', filename='cylinder_use.png') }}" alt="result image" style="width:600px;height:450px;">
                         {%endif%}
                     </div>
                 </td>
