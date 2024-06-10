@@ -8,3 +8,4 @@ Run flask app in debug mode:
 
     flask --app hello run --debug
 
+or look notebooks for basic pyMAPDL functionality.
