@@ -66,6 +66,7 @@ def solve_vm_35(
     # Annotate the database with the system of units used
     mapdl.units(label="BIN")
 
+    # ------------------------- PREP7 --------------------------------------
     # Enter the model creation preprocessor
     mapdl.prep7()
 
@@ -97,22 +98,32 @@ def solve_vm_35(
     )  # LAYER 2: 0.05 THICK, MAT'L 2, THETA 0,
 
     # ------------------------- Materials --------------------------------------
-    mapdl.mp("EX", 1, ex_mat1)  # MATERIAL PROPERTIES
-    mapdl.mp("EX", 2, ex_mat2)
-    mapdl.mp("ALPX", 1, cte_mat1)
-    mapdl.mp("ALPX", 2, cte_mat2)
-    mapdl.mp("NUXY", 1, 0)
-    mapdl.mp("NUXY", 2, 0)
-    mapdl.n(1)  # DEFINE GEOMETRY
-    mapdl.n(12, "", 1)
-    mapdl.n(22, length, 1)
-    mapdl.n(11, length)
-    mapdl.fill(1, 11, 9, 2, 1)
-    mapdl.fill(12, 22, 9, 13, 1)
+    # Define a linear material property
+    # Elastic modulus
+    mapdl.mp(lab="EX", mat=1, c0=ex_mat1)
+    mapdl.mp(lab="EX", mat=2, c0=ex_mat2)
+    # Thermal expansion coefficient
+    mapdl.mp(lab="ALPX", mat=1, c0=cte_mat1)
+    mapdl.mp(lab="ALPX", mat=2, c0=cte_mat2)
+    # Poisson's ratio
+    mapdl.mp(lab="NUXY", mat=1, c0=0)
+    mapdl.mp(lab="NUXY", mat=2, c0=0)
+
+    # ------------------------- Geometry --------------------------------------
+    # Define nodes
+    mapdl.n(node=1)
+    mapdl.n(node=12, x="", y=1)
+    mapdl.n(node=22, x=length, y=1)
+    mapdl.n(node=11, x=length)
+
+    # Generate lines of nodes between two existing nodes
+    mapdl.fill(node1=1, node2=11, nfill=9, nstrt=2, ninc=1)
+    mapdl.fill(node1=12, node2=22, nfill=9, nstrt=13, ninc=1)
 
     for _ in range(0, 6):
         mapdl.fill(_ * 2 + 1, (_ + 1) * 2 + 10, 1, _ + 23)
 
+    # Define elements by node connectivity
     for _ in range(0, 5):
         mapdl.e(
             _ * 2 + 1,
