@@ -1,3 +1,4 @@
+""" Get .py file from APDL command block automatically"""
 from ansys.mapdl.core.convert import convert_apdl_block
 
 apdl_string = """/com, This is a block of APDL commands.

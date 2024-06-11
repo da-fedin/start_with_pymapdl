@@ -1,4 +1,4 @@
-# scripts/build_project.ps1
+""" Build project from scratch"""
 
 param (
     [string]$requirementsFile = "requirements.txt",

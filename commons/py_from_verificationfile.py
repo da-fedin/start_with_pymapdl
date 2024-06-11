@@ -1,3 +1,4 @@
+""" Get .py file from Ansys Verification Manual file by its number automatically"""
 from ansys.mapdl import core as pymapdl
 from ansys.mapdl.core import examples
 import os

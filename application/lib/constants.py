@@ -1,3 +1,4 @@
+""" Global variables (constants) to serve flask based app """
 WORK_DIR_NAME = "tmp"
 
 JOB_NAME = "my_new_vm"

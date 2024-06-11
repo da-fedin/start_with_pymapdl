@@ -1,3 +1,4 @@
+""" Functions to serve flask based app"""
 import os
 from ansys.mapdl.core import launch_mapdl
 from ansys.mapdl.core.mapdl_grpc import MapdlGrpc
