@@ -1,5 +1,3 @@
-""" Build project from scratch"""
-
 param (
     [string]$requirementsFile = "requirements.txt",
     [string]$venvDir = ".venv",
