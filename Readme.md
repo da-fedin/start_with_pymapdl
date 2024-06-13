@@ -12,4 +12,7 @@ Run flask app in debug mode:
 
     flask --app app run --debug
 
+App demo:
+![here](sources/app_demo.gif)
+
 ### Look notebooks for basic pyMAPDL functionality.
